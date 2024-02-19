@@ -1,1 +1,15 @@
+Create Virtual machine from CLI
+
+1. az group create -l centralindia -n az104
+2. az vm create -n ServerA -g az104 --image Ubuntu2204 --authentication-type password --admin-username rajeev --admin-password Welcome@123456789 --count 3
+3. az group delete -n az104-kuber
+
+Application Deployment through docker engine. 
+
+Creat the Linux VM 
+install the docker from - https://docs.docker.com/engine/install/ubuntu/
+docker --version
+docker ps
+
+
 
