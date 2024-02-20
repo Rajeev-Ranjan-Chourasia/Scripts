@@ -12,4 +12,7 @@ docker --version
 docker ps
 
 
+AAD (Azure Active Directory)
+RBAC -roll based access control. 
+
 
