@@ -39,5 +39,34 @@ systemctl daemon-reload
 systemctl restart kubelet
 kubectl describe node manager
 to provide all the details.
+      
 ******************************************************************************************************************************
+Quality of services- 
+      best effor (if we not mentioned the cpu and memeory in the pods)
+      brustable (we mentioned the cpu and memory in the pod min, max)
+      guranteed- (we mentioed the cpu and memory in fixed way)
+
+  OOM Killer- 
+      kubectl top nodes
+      install the metric server from git hub ch-02-pod-scheduling/metric-server.yaml
+      increase the CPU use the below curl -
+       while true; do curl http://172.16.161.72 ; done
+  to increase the memory of the application use below script 
+      ch-01-pods-containers/pod-with-memory-exceed.yml
+
+      OOM- Aay process memory allocated if trying to calim more. OOM come in picture restrt the container. 
+      exit code 137
+      Resources 
+      CPU- comes under comprasiable (if process exceed cpu, then cpu send throtling error and process will be slow)
+      Memory- comes under non comprasable (if memory excced by any process then restart the application by OOM)
+******************************************************************************************************************************
+namespace, resources quota, limit ranges
+      
+      
+
+
+      
+      
+
+
 
