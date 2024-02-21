@@ -1,53 +1,43 @@
-. first class.
+First class.
 create three machine- 
-lsb_release -a
-OS=xUbuntu_22.04
 sudo swapoff -a
 nc 127.0.0.1 6443
 swapoff /etc/fstab
 mount -a
 check the version of OS- 
 lsb_release -a
-
+OS=xUbuntu_22.04
 set the environment variable. 
-
 run the script on all the machine. 
-
+scripts/common-1.28.0-without-proxy
+*********************************************************************************************************************
 kubernetes command 
-
 1. kubeadm config images pull to pull the images 
 ---> kubeadm config images pull
-2. crictl images
+---> crictl images
+2. kubeadm init --apiserver-advertise-address 10.0.0.5 --pod-network-cidr 172.16.0.0/16
+3. create calico.yaml
+  ---> scripts/calico.yaml
+  ---> kubectl apply -f calico.yaml
 
-3. kubeadm init --apiserver-advertise-address 10.0.0.5 --pod-network-cidr 172.16.0.0/16
-
-4. create calico.yaml
-5. kubectl apply -f calico.yaml
-
-for auto completation of kubectl command 
-run the below command- source <(kubectl completion bash) 
-echo "source <(kubectl completion bash)" >> ~/.bashrc
-
-6. kubeadm token create --print-join-command
-
-7. kubectl get node
-
-8. kubectl -n kube-system get pods
-
-9. kubectl get node -o wide
-NAME      STATUS   ROLES           AGE   VERSION   INTERNAL-IP       EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
-manager   Ready    control-plane   46h   v1.28.0   192.168.230.133   <none>        Ubuntu 22.04.3 LTS   5.15.0-91-generic   cri-o://1.23.5
-worker1   Ready    <none>          13m   v1.28.0   192.168.230.134   <none>        Ubuntu 22.04.3 LTS   5.15.0-91-generic   cri-o://1.23.5
-worker2   Ready    <none>          13m   v1.28.0   192.168.230.135   <none>        Ubuntu 22.04.3 LTS   5.15.0-91-generic   cri-o://1.23.5
-
-vim /etc/default/kubelet
+4. For auto completation of kubectl command 
+    run the below command- source <(kubectl completion bash) 
+    echo "source <(kubectl completion bash)" >> ~/.bashrc
+    
+5- recreate the token-
+  ---> kubeadm token create --print-join-command
+      apply the token on all the worker server- 
+      
+6. kubectl get node
+7. kubectl -n kube-system get pods
+8. kubectl get node -o wide
+9. configure the private IP on the workier node for the pods. 
+    vim /etc/default/kubelet
   ## add this line ##
   KUBELET_CONFIG_ARGS='--node-ip=10.0.0.100'
-
-In both cases run - 
-
 systemctl daemon-reload
 systemctl restart kubelet
-
 kubectl describe node manager
-to provide all the details. 
+to provide all the details.
+******************************************************************************************************************************
+
