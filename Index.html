@@ -61,6 +61,30 @@ Quality of services-
       Memory- comes under non comprasable (if memory excced by any process then restart the application by OOM)
 ******************************************************************************************************************************
 namespace, resources quota, limit ranges
+Name clash- 
+resources allocation-
+commuincation- 
+namespace-- isolation--- virtual cluster filer
+      kubectl get ns
+      kubectl create ns dev
+      kubectl -n test  get pod
+      kubectl get pod -n dev
+      
+      kubectl describe ns dev
+      kubectl create quota --help
+
+      coppy the quota from yaml from git hub
+      ch-05-namespaces/namespace-resourcequota.yml
+      
+      kubectl -n test apply -f test-quota.yaml
+      kubectl -n dev get pods
+      kubectl -n dev apply -f namespacepod.yaml
+
+      Limit range-
+      per pods- min, max, default
+      
+
+      
       
       
 
