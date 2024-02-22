@@ -1,7 +1,7 @@
 Create Virtual machine from CLI
 
-1. az group create -l centralindia -n az104
-2. az vm create -n ServerA -g az104 --image Ubuntu2204 --authentication-type password --admin-username rajeev --admin-password Welcome@123456789 --count 3
+1. az group create -l centralindia -n az104-monioring
+2. az vm create -n ServerA -g az104-monioring --image Ubuntu2204 --authentication-type password --admin-username rajeev --admin-password Welcome@123456789 --count 3
 3. az group delete -n az104-kuber
 
 Application Deployment through docker engine. 
@@ -15,4 +15,6 @@ docker ps
 AAD (Azure Active Directory)
 RBAC -roll based access control. 
 
+*******************Azure Monitoring ************************
+create two linux VM
 
