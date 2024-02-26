@@ -94,8 +94,49 @@ namespace-- isolation--- virtual cluster filer
       
       
       
+******************************************************************************************************************************
+Deployment and Replica set
+  --> no self healing in normal pods. 
+  --> No scaling (in case load incease not created muliple copy)
+  --> upgrade donwtime required. (It should be online).
 
+      APP---> Deployment---> Replica set ---> Pod (application utlimately run in pod, but we will not create the pod)
 
+      Deployment feature ---upgrade, rollback
+      Replica set feature ---> self healing, scaling (manual, Auto(HPA))
+  *** selector of replica set must match the labels of pods. 
+
+     kubectl apply -f mydeployment.yaml
+     kubectl get deployment
+        nginx-deployment
+     kubectl get replicaset
+        nginx-deployment-5ccbf989c6 
+     kuebectl get pods
+        nginx-deployment-5ccbf989c6-hhqqf
+       
+      kubectl describe deploy  nginx-deployment
+      kubectl describe replicaset nginx-deployment-5ccbf989c6
+
+      kubectl delete pods nginx-deployment-5ccbf989c6-hhqqf
+      kubectl get pods -o wide
+
+***Pods IP is not reliable then we introduce Service- 
+      slector of service must match the label of pods
+    create service imperatinve- 
+      kubectl get deployment
+      kubectl expose deployment nginx-deployment --name nginx-dep-svc
+      kubectl get svc
+      kubectl delete svc nginx-dep-svc
+      kubectl describe svc nginx-dep-svc
+      kubectl get pods -o wide
+
+      
+
+      
+      
+
+      
+      
       
       
 
