@@ -83,7 +83,14 @@ namespace-- isolation--- virtual cluster filer
       Limit range-
       per pods- min, max, default
       
+******************************************************************************************************************************
 
+      Network policy- 
+      1. run the pod in three namespace- 
+          kubectl -n staging apply -f namespacepod3.yaml
+      2. check pod in namespace-  
+          kubectl -n staging get pod -o wide
+      
       
       
       
