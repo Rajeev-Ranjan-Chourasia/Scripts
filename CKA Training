@@ -1,0 +1,183 @@
+First class.
+create three machine- 
+sudo swapoff -a
+nc 127.0.0.1 6443
+swapoff /etc/fstab
+mount -a
+check the version of OS- 
+lsb_release -a
+OS=xUbuntu_22.04
+set the environment variable. 
+run the script on all the machine. 
+scripts/common-1.28.0-without-proxy
+*********************************************************************************************************************
+kubernetes command 
+1. kubeadm config images pull to pull the images 
+---> kubeadm config images pull
+---> crictl images
+2. kubeadm init --apiserver-advertise-address 10.0.0.5 --pod-network-cidr 172.16.0.0/16
+3. create calico.yaml
+  ---> scripts/calico.yaml
+  ---> kubectl apply -f calico.yaml
+
+4. For auto completation of kubectl command 
+    run the below command- source <(kubectl completion bash) 
+    echo "source <(kubectl completion bash)" >> ~/.bashrc
+    
+5- recreate the token-
+  ---> kubeadm token create --print-join-command
+      apply the token on all the worker server- 
+      
+6. kubectl get node
+7. kubectl -n kube-system get pods
+8. kubectl get node -o wide
+9. configure the private IP on the workier node for the pods. 
+    vim /etc/default/kubelet
+  ## add this line ##
+  KUBELET_CONFIG_ARGS='--node-ip=10.0.0.100'
+systemctl daemon-reload
+systemctl restart kubelet
+kubectl describe node manager
+to provide all the details.
+      
+******************************************************************************************************************************
+Quality of services- 
+      best effor (if we not mentioned the cpu and memeory in the pods)
+      brustable (we mentioned the cpu and memory in the pod min, max)
+      guranteed- (we mentioed the cpu and memory in fixed way)
+
+  OOM Killer- 
+      kubectl top nodes
+      install the metric server from git hub ch-02-pod-scheduling/metric-server.yaml
+      increase the CPU use the below curl -
+       while true; do curl http://172.16.161.72 ; done
+  to increase the memory of the application use below script 
+      ch-01-pods-containers/pod-with-memory-exceed.yml
+
+      OOM- Aay process memory allocated if trying to calim more. OOM come in picture restrt the container. 
+      exit code 137
+      Resources 
+      CPU- comes under comprasiable (if process exceed cpu, then cpu send throtling error and process will be slow)
+      Memory- comes under non comprasable (if memory excced by any process then restart the application by OOM)
+******************************************************************************************************************************
+namespace, resources quota, limit ranges
+Name clash- 
+resources allocation-
+commuincation- 
+namespace-- isolation--- virtual cluster filer
+      kubectl get ns
+      kubectl create ns dev
+      kubectl -n test  get pod
+      kubectl get pod -n dev
+      
+      kubectl describe ns dev
+      kubectl create quota --help
+
+      coppy the quota from yaml from git hub
+      ch-05-namespaces/namespace-resourcequota.yml
+      
+      kubectl -n test apply -f test-quota.yaml
+      kubectl -n dev get pods
+      kubectl -n dev apply -f namespacepod.yaml
+
+      Limit range-
+      per pods- min, max, default
+      
+******************************************************************************************************************************
+
+      Network policy- 
+      1. run the pod in three namespace- 
+          kubectl -n staging apply -f namespacepod3.yaml
+      2. check pod in namespace-  
+          kubectl -n staging get pod -o wide
+      
+      
+      
+      
+******************************************************************************************************************************
+Deployment and Replica set
+  --> no self healing in normal pods. 
+  --> No scaling (in case load incease not created muliple copy)
+  --> upgrade donwtime required. (It should be online).
+
+      APP---> Deployment---> Replica set ---> Pod (application utlimately run in pod, but we will not create the pod)
+
+      Deployment feature ---upgrade, rollback
+      Replica set feature ---> self healing, scaling (manual, Auto(HPA))
+  *** selector of replica set must match the labels of pods. 
+
+     kubectl apply -f mydeployment.yaml
+     kubectl get deployment
+        nginx-deployment
+     kubectl get replicaset
+        nginx-deployment-5ccbf989c6 
+     kuebectl get pods
+        nginx-deployment-5ccbf989c6-hhqqf
+       
+      kubectl describe deploy  nginx-deployment
+      kubectl describe replicaset nginx-deployment-5ccbf989c6
+
+      kubectl delete pods nginx-deployment-5ccbf989c6-hhqqf
+      kubectl get pods -o wide
+
+***Pods IP is not reliable then we introduce Service- 
+      slector of service must match the label of pods
+    create service imperatinve- 
+      kubectl get deployment
+      kubectl expose deployment nginx-deployment --name nginx-dep-svc
+      kubectl get svc
+      kubectl delete svc nginx-dep-svc
+      kubectl describe svc nginx-dep-svc
+      kubectl get pods -o wide
+
+      Scaling- 
+      Manual scaling- 
+      kubectl scale --replicas=3 rs/foo  
+      kubectl scale --replicas=5 deployment/nginx-deployment
+
+      Auto scaling- 
+      HPA horizontel pods auto scaling. 
+      Metric server- 
+      deployment name 
+      trigger- CPU, Memroy- 
+      Min pods, max pods. 
+      
+      
+*************************************Scheduler*********************************************
+      ch-02-pod-scheduling/pod-for-specific-node.yml
+
+      node selector- 
+      pod can select a node based on some condition. two step process- 
+      label node, use node selector
+      only the single condition use. 
+
+kubectl describe nodes ip-10-0-0-133
+kubectl label node ip-10-0-0-133 disk=stat --overwrite
+kubectl label node ip-10-0-0-132 cpu=xeon
+
+kubectl label node ip-10-0-0-132 env=test
+kubectl label node ip-10-0-0-132 disk=ssd
+kubectl get nodes -L cpu -L env -L disk
+
+kubectl label node ip-10-0-0-132 disk-
+   node/ip-10-0-0-132 unlabeled
+
+https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
+
+      multiple condition 
+      affintiy anti affinity- (AND OR)
+
+      Pod affinity- 
+      
+      Pod anti affnity- 
+      
+
+      
+      
+      
+      
+
+      
+      
+      
+      
