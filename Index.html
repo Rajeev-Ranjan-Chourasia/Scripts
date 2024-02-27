@@ -130,8 +130,42 @@ Deployment and Replica set
       kubectl describe svc nginx-dep-svc
       kubectl get pods -o wide
 
-      
+      Scaling- 
+      Manual scaling- 
+      kubectl scale --replicas=3 rs/foo  
+      kubectl scale --replicas=5 deployment/nginx-deployment
 
+      Auto scaling- 
+      HPA horizontel pods auto scaling. 
+      Metric server- 
+      deployment name 
+      trigger- CPU, Memroy- 
+      Min pods, max pods. 
+      
+      
+*************************************Scheduler*********************************************
+      ch-02-pod-scheduling/pod-for-specific-node.yml
+
+      node selector- 
+      pod can select a node based on some condition. two step process- 
+      label node, use node selector
+      only the single condition use. 
+
+kubectl describe nodes ip-10-0-0-133
+kubectl label node ip-10-0-0-133 disk=stat --overwrite
+kubectl label node ip-10-0-0-132 cpu=xeon
+
+kubectl label node ip-10-0-0-132 env=test
+kubectl label node ip-10-0-0-132 disk=ssd
+kubectl get nodes -L cpu -L env -L disk
+
+kubectl label node ip-10-0-0-132 disk-
+   node/ip-10-0-0-132 unlabeled
+
+https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
+
+      
+      
       
       
 
