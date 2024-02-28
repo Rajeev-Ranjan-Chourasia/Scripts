@@ -164,13 +164,21 @@ kubectl label node ip-10-0-0-132 disk-
 
 https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
 
-      multiple condition 
-      affintiy anti affinity- (AND OR)
+multiple condition 
+affintiy ---
+node affinity, node anti affnity
+ch-02-pod-scheduling/pod-with-node-affinity-multiple.yml
 
-      Pod affinity- 
-      
-      Pod anti affnity- 
-      
+pode affinity, pod anti affnity
+ch-02-pod-scheduling/pod-with-anti-pod-affinity.yml
+
+***********************************************************************************************************************************************************************
+Taints & Tolaration
+is a way by which node can refuse certain kind of pods. 
+ Node not created on the mangere due to taints applied,check from below command. 
+ kubectl describe nodes ip-10-0-0-132 |grep -i taints
+
+
 
       
       
