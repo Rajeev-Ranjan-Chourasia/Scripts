@@ -2,4 +2,32 @@ https://trainingportal.linuxfoundation.org/learn/dashboard
 userid- ranjanchourasia@gmail.com
 password- Jaisaibaba@2024
 
+Ques 1
+create the file q1.rbac.yaml
+make four changes changes- 
+ name: deployment-clusterone
+- apiGroups: ["","apps/v1"]
+resources: ["deployments","statefulsets","daemonsets"]
+  verbs: ["create"]
+
+kubectl apply -f q1-rbac.yaml
+kubectl describe clusterrole.rbac.authorization.k8s.io/deployment-clusterone
+
+  kubectl create ns app-team1
+  kubectl create serviceaccount cicd-token -n app-team1
+  kubectl get serviceaccount -n app-team1
+
+create a new file- q1-bind.yaml
+make these changes- 
+  namespace: app-team1
+  kind: ServiceAccount
+  name: cicd-token # "name" is case sensitive
+  namespace: app-team1
+  kind: ClusterRole #this must be Role or ClusterRole
+  name: deployment-clusterone # this must match the name of the Role or ClusterRole you wish to bind to
+
+kubectl -n app-team1 describe rolebinding.rbac.authorization.k8s.io/read-pods
+
+***************************************************************************************************************************************************
+
 
