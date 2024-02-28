@@ -177,7 +177,9 @@ Taints & Tolaration
 is a way by which node can refuse certain kind of pods. 
  Node not created on the mangere due to taints applied,check from below command. 
  kubectl describe nodes ip-10-0-0-132 |grep -i taints
-
+***********************************************************************************************************************************************************************
+RBAC
+ch-07-rbac/steps-for-user-authentication
 
 
       
