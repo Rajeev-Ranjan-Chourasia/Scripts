@@ -3,6 +3,12 @@ userid- ranjanchourasia@gmail.com
 password- Jaisaibaba@2024
 
 Ques 1
+kubectl api-resources
+
+deployments                       deploy       apps/v1                                true         Deployment
+statefulsets                      sts          apps/v1                                true         StatefulSet
+daemonsets                        ds           apps/v1                                true         DaemonSet
+
 create the file q1.rbac.yaml
 make four changes changes- 
  name: deployment-clusterone
@@ -34,14 +40,20 @@ Ques 2
 set context abv 
 kubectl cordon ip-10-0-0-133
 
+
 ***************************************************************************************************************************************************
 Ques 3
+Take the backup-
+ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /tmp/myclusterbackup.db
+Restore it
+ ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot restore /tmp/myclusterbackup.db
+replace the old file with new file 
+go to the path /root/exam/default.etcd/member
+cp -rvf * /var/lib/etcd/member/
 
-ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save 
-/tmp/myclusterbackup.db
+***************************************************************************************************************************************************
+Ques 4
 
-ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot restore
-/tmp/myclusterbackup.db
 
 
 
