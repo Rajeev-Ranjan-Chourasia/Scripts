@@ -15,7 +15,7 @@ kubernetes command
 1. kubeadm config images pull to pull the images 
 ---> kubeadm config images pull
 ---> crictl images
-2. kubeadm init --apiserver-advertise-address 10.0.0.5 --pod-network-cidr 172.16.0.0/16
+2. kubeadm init --apiserver-advertise-address 10.0.0.100 --pod-network-cidr 172.16.0.0/16
 3. create calico.yaml
   ---> scripts/calico.yaml
   ---> kubectl apply -f calico.yaml
