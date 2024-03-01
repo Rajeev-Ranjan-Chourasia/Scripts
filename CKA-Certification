@@ -53,6 +53,55 @@ cp -rvf * /var/lib/etcd/member/
 
 ***************************************************************************************************************************************************
 Ques 4
+create a name space corp-net
+cubectl get ns
+run two pods on the same name space
+label the pods
+kubectl -n corp-net label pods firstpod area=prod
+kubectl -n corp-net label pods secondpod area=prod
+search network policy 
+create teh netpol.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-port-from-namespace
+  namespace: corp-net
+spec:
+  podSelector: {}
+#    matchLabels:
+#      role: db
+  policyTypes:
+  - Ingress
+# - Egress
+  ingress:
+  - from:
+#    - ipBlock:
+#        cidr: 172.17.0.0/16
+#        except:
+#        - 172.17.1.0/24
+    - namespaceSelector:
+        matchLabels:
+          area: test
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 8080
+
+***************************************************************************************************************************************************
+Ques 5
+create one deployment if exist the edit it 
+edit the deployment 
+ ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+save and exit
+
+kubectl expose deployment front-end --name "front-end-svc
+kubectl expose deployment front-end --name front-end-svc-np --type NodePort
+***************************************************************************************************************************************************
+
+
 
 
 
