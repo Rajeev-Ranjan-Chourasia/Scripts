@@ -89,7 +89,7 @@ spec:
 
 ***************************************************************************************************************************************************
 Ques 5
-create one deployment if exist the edit it 
+create one deployment if exist then edit it 
 edit the deployment 
  ports:
         - containerPort: 80
@@ -100,10 +100,28 @@ save and exit
 kubectl expose deployment front-end --name "front-end-svc
 kubectl expose deployment front-end --name front-end-svc-np --type NodePort
 ***************************************************************************************************************************************************
+Ques 6
+copy the ingress yaml and change as below- 
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ping
+  namespace: ing-internal
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx-example
+  rules:
+  - http:
+      paths:
+      - path: /hello
+        pathType: Prefix
+        backend:
+          service:
+            name: hello
+            port:
+              number: 5678
 
-
-
-
-
+***************************************************************************************************************************************************
 
 
