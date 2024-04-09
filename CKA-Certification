@@ -2,65 +2,119 @@ https://trainingportal.linuxfoundation.org/learn/dashboard
 userid- ranjanchourasia@gmail.com
 password- Jaisaibaba@2024
 
-Ques 1
-kubectl api-resources
 
+==>kubectl config get-contexts > /opt/course/1/contexts
+cat /opt/course/1/contexts
+
+==> kubectl config current-context
+
+==> cat ~/.kube/config | grep current
+
+
+Ques 1
+
+sudo access milega
+
+kubectl api-resources
 deployments                       deploy       apps/v1                                true         Deployment
 statefulsets                      sts          apps/v1                                true         StatefulSet
 daemonsets                        ds           apps/v1                                true         DaemonSet
 
-create the file q1.rbac.yaml
-make four changes changes- 
- name: deployment-clusterone
+q1-rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  # "namespace" omitted since ClusterRoles are not namespaced
+  name: deployment-clusterone
+rules:
 - apiGroups: ["","apps/v1"]
-resources: ["deployments","statefulsets","daemonsets"]
+  #
+  # at the HTTP level, the name of the resource for accessing Secret
+  # objects is "secrets"
+  resources: ["deployments","replicasets","statefulsets"]
   verbs: ["create"]
 
 kubectl apply -f q1-rbac.yaml
-kubectl describe clusterrole.rbac.authorization.k8s.io/deployment-clusterone
+cubectl describe clusterrole.rbac.authorization.k8s.io/deployment-clusterone
 
-  kubectl create ns app-team1
-  kubectl create serviceaccount cicd-token -n app-team1
-  kubectl get serviceaccount -n app-team1
+kubectl get ns
+kubectl create ns app-team1
+kubectl create serviceaccount cicd-token -n app-team1
 
-create a new file- q1-bind.yaml
-make these changes- 
+q1-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows "jane" to read pods in the "default" namespace.
+# You need to already have a Role named "pod-reader" in that namespace.
+kind: RoleBinding
+metadata:
+  name: read-pods
   namespace: app-team1
-  kind: ServiceAccount
+subjects:
+# You can specify more than one "subject"
+- kind: ServiceAccount
   name: cicd-token # "name" is case sensitive
   namespace: app-team1
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole
   kind: ClusterRole #this must be Role or ClusterRole
   name: deployment-clusterone # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
 
+kubectl apply -f q1-role.yaml
 kubectl -n app-team1 describe rolebinding.rbac.authorization.k8s.io/read-pods
-
-***************************************************************************************************************************************************
+*************************************************************************************************************************************************************************************
 
 Ques 2
-set context abv 
-kubectl cordon ip-10-0-0-133
 
+pehle cordon karege ya drain
 
-***************************************************************************************************************************************************
+kubectl cordon worker2
+kubectl drain worker2 --ignore-daemonsets=false
+
+uncordon ki jaruat to nahi hai 
+
+*************************************************************************************************************************************************************************************
 Ques 3
-Take the backup-
-ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /tmp/myclusterbackup.db
-Restore it
- ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot restore /tmp/myclusterbackup.db
-replace the old file with new file 
-go to the path /root/exam/default.etcd/member
-cp -rvf * /var/lib/etcd/member/
+set context abc
 
-***************************************************************************************************************************************************
+ssh to another system
+and sudo su-
+
+ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt 
+--cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /data/backup/mysnapshot.db
+
+	ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt
+--cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /data/backup/somefile.db
+
+
+ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt
+--cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /data/backup/somefile.db
+ 
+ 
+Restore an existing, previous snapshot located at /var/lib/backup/somefile.d
+
+cd exam/default.etcd/member
+
+ll /var/lib/backup/somefile.db
+
+cp * /var/lib/backup/somefile.db
+
+
+
+
+
+*************************************************************************************************************************************************************************************
 Ques 4
-create a name space corp-net
-cubectl get ns
-run two pods on the same name space
-label the pods
-kubectl -n corp-net label pods firstpod area=prod
-kubectl -n corp-net label pods secondpod area=prod
-search network policy 
-create teh netpol.yaml
+create the namespace corp-net
+
+label the namespace- 
+
+kubectl label ns corp-net  area=corp-net --overwrite
+kubectl label ns app-team1 area=test --overwrite
+
+create the networkpolicy.yaml as below
+
+
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -68,11 +122,11 @@ metadata:
   namespace: corp-net
 spec:
   podSelector: {}
-#    matchLabels:
+# matchLabels:
 #      role: db
   policyTypes:
   - Ingress
-# - Egress
+#  - Egress
   ingress:
   - from:
 #    - ipBlock:
@@ -81,27 +135,33 @@ spec:
 #        - 172.17.1.0/24
     - namespaceSelector:
         matchLabels:
-          area: test
-    - podSelector: {}
+          area: app-team1
+      podSelector: {}
     ports:
     - protocol: TCP
       port: 8080
 
-***************************************************************************************************************************************************
+apply the yaml and describe the yaml
+*************************************************************************************************************************************************************************************
 Ques 5
-create one deployment if exist then edit it 
-edit the deployment 
- ports:
-        - containerPort: 80
-          name: http
-          protocol: TCP
-save and exit
+create one deployment-clusterone
+apply the deployment 
 
-kubectl expose deployment front-end --name "front-end-svc
+edit the deployment add these line 
+
+ports:
+  - containerPort: 80
+    name: http
+	protocol: TCP
+
+
+kubectl expose deployment front-end --name front-end-svc
 kubectl expose deployment front-end --name front-end-svc-np --type NodePort
-***************************************************************************************************************************************************
+*************************************************************************************************************************************************************************************
+
 Ques 6
-copy the ingress yaml and change as below- 
+
+create ingres.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -122,19 +182,187 @@ spec:
             port:
               number: 5678
 
-***************************************************************************************************************************************************
-Ques 7
-kubectl scale deployment front-end --replicas=4
-***************************************************************************************************************************************************
-Ques 8
-label the node 
+apply the yaml
+
+kubectl -n ing-internal get ingress
+
+*************************************************************************************************************************************************************************************
+Quess 7
+
+scale the deployment
+
+kubectl scale deployment front-end --replicas=3
+
+kubectl get deployment
+*************************************************************************************************************************************************************************************
+Quess 8
+label the any node as disk=spining
+kubectl label nodes worker2 disk=spining
 kubectl label nodes worker2 disk=spinning
+
+kubectl label nodes worker2 disk=spinning --overwrite
 search node selector
- and make the changes as disk=spinning
 
-***************************************************************************************************************************************************
-Ques 9
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-kusc007
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+  nodeSelector:
+    disk: spining
 
-***************************************************************************************************************************************************
+apply the yaml. and describe the pods node selector must be spinning. 
 
+*************************************************************************************************************************************************************************************
+Quess 9
+
+kubectl describe nodes manager |grep -i taints
+*************************************************************************************************************************************************************************************
+Quess 11
+search persistent volume 
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: app-config
+  labels:
+    type: local
+spec:
+#  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadOnlyMany
+  hostPath:
+    path: " /srv/app-config"
+	
+	apply and kubectl get pv
+	
+*************************************************************************************************************************************************************************************
+Ques 12
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-volume
+spec:
+  storageClassName: csi-hostpath-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-server
+spec:
+  volumes:
+    - name: task-pv-storage
+      persistentVolumeClaim:
+        claimName: app-config
+  containers:
+    - name: task-pv-container
+      image: nginx
+      ports:
+        - containerPort: 80
+          name: "http-server"
+      volumeMounts:
+        - mountPath: "/usr/share/nginx/somepath"
+          name: task-pv-storage
+		  
+		  
+kubectl edit pvc pv-volume
+*************************************************************************************************************************************************************************************
+Quess 13
+
+kubectl logs foobar |grep -i enabled
+
+kubectl logs foobar |grep -i enabled > /tmp/filename
+*************************************************************************************************************************************************************************************
+Ques 15
+
+metrix server install milega
+and we need to assing the label or overload-cpu
+
+overload label mileta
+
+
+kubectl top pods -l env=test
+echo foobar > /tmp/high-cpu-pods
+		
+*************************************************************************************************************************************************************************************
+ques 16
+
+wk8s-node-0 ye machine pe jane ke liye user id and password kya hoga
+and sudo access milega
+
+ssh the worker machine 
+ssh from which user- 
+ 
+sudo su -
+
+systemctl stop kubelet
+systemctl start kubelet
+
+
+
+*************************************************************************************************************************************************************************************
+master node ka ip diya hoga- and sudo access hoga waha pe
+hum master node pe nahi hoge kya
+
+hum existing pe to nahi karege nahi
+
+kubectl get nodes
+
+sudo apt update
+
+sudo apt-cache madison kubeadm
+
+sudo apt-mark unhold kubeadm && \
+sudo apt-get update && sudo apt-get install -y kubeadm='1.28.1-00' && \
+sudo apt-mark hold kubeadm
+
+kubeadm version
+
+kubeadm upgrade plan
+
+sudo kubeadm upgrade apply v1.28.1
+
+kubectl get nodes
+
+kubectl drain manager --ignore-daemonsets
+
+sudo apt-mark unhold kubelet kubectl && sudo apt-get update && sudo apt-get install -y kubelet='1.28.1-00' kubectl='1.28.1-00' && sudo apt-mark hold kubelet kubectl
+
+sudo systemctl daemon-reload
+
+sudo systemctl restart kubelet
+
+kubectl uncordon manager
+
+kubectl get nodes
+
+ 
+
+
+v1.28.0
+
+
+1.28.1-00
+
+sudo apt-mark unhold kubeadm && \
+sudo apt-get update && sudo apt-get install -y kubeadm='1.28.2-00' && \
+sudo apt-mark hold kubeadm
+
+sudo apt-mark unhold kubelet kubectl && \
+sudo apt-get update && sudo apt-get install -y kubelet='1.28.1-00' kubectl='1.28.1-00' && \
+sudo apt-mark hold kubelet kubectl
 
